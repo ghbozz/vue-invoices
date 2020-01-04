@@ -42,74 +42,111 @@
     <p id="marked" v-if="marked > 0">{{ marked }} Marked to be destroyed</p>
 
     <div v-for="(field, index) in invoice_attr.fields_attributes">
-      <div v-if="field._destroy == '1'">
-        <div class="disabled-field">
-          <fieldset disabled>
 
-          <div class="field">
-            <div class="control">
-              <input class="input" type="text" :placeholder="field.reference">
-            </div>
-          </div>
-
-          </fieldset>
-          <button class="undo-btn button is-warning" @click="undo(index)">O</button>
-        </div>
-      </div>
-
-      <div v-else class="columns">
-        <div class="column">
-          <div class="field">
-            <label class="label">Field Reference</label>
-            <div class="control">
-              <input class="input"
-                     type="text"
-                     placeholder="Text input"
-                     v-model="field.reference">
-            </div>
-          </div>
-        </div>
-
-        <div class="column">
-          <div class="field">
-            <label class="label">Quantity</label>
-            <div class="control">
-              <input class="input"
-                     type="text"
-                     placeholder="Text input"
-                     v-model="field.quantity">
-            </div>
-          </div>
-        </div>
-
-        <button class="button is-danger" @click="removeItem(index)">X</button>
-
-      </div>
+    <field :field="field" :index="index" />
 
     </div>
 
     <button class="button is-primary field-btn" @click="addItem">Add Item</button>
 
     <hr>
+    <h2 class="title">Total</h2>
 
-    <button class="button is-primary" @click="save">Save Invoice</button>
+    <div class="columns">
+      <div class="column is-offset-9 is-3">
+        <div class="field is-horizontal" id="total-field">
+          <div class="field-label is-normal">
+            <label class="label">HT</label>
+          </div>
+          <div class="field-body">
+            <fieldset disabled>
+              <div class="field">
+                <p class="control has-icons-right">
+                  <input class="input is-medium" v-model="invoice_attr.total_ht">
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-euro-sign"></i>
+                  </span>
+                </p>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column">
+        <button class="button is-primary is-medium" @click="save">Save Invoice</button>
+      </div>
+      <div class="column">
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">VAT</label>
+          </div>
+          <div class="control has-icons-left">
+            <div class="select is-medium">
+              <select v-model="vat" @change="compute">
+                <option selected>0</option>
+                <option>10</option>
+                <option>20</option>
+              </select>
+            </div>
+            <div class="icon is-small is-left">
+              <i class="fas fa-globe"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-3">
+        <div class="field is-horizontal" id="total-field">
+          <div class="field-label is-normal">
+            <label class="label">TTC</label>
+          </div>
+          <div class="field-body">
+            <fieldset disabled>
+              <div class="field">
+                <p class="control has-icons-right">
+                  <input class="input is-medium" v-model="invoice_attr.total_ttc">
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-euro-sign"></i>
+                  </span>
+                </p>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
   </div>
 </template>
 
 <script>
+  import field from './field.vue'
+
   export default {
     data() {
       return {
         marked: 0,
+        vat: 0,
+        total_vat: 0,
         invoice_attr: {
           reference: this.invoice.reference,
           description: this.invoice.description,
           number: this.invoice.number,
+          total_ht: null,
+          total_ttc: null,
           fields_attributes: this.fields
         }
       }
     },
     props: ['invoice', 'fields'],
+    components: {
+      field
+    },
     methods: {
       addItem() {
         this.invoice_attr.fields_attributes.push({
@@ -130,6 +167,21 @@
         this.invoice_attr.fields_attributes[index]._destroy = '0'
         this.marked -= 1
       },
+      compute() {
+        // SELECT ONLY VALID FIELDS
+        const validFields = this.invoice_attr.fields_attributes
+                                .filter(field => field._destroy !== '1')
+
+        // IF VALID FIELDS COMPUTE HT TTC & VAT
+        if (validFields.length > 0) {
+          this.invoice_attr.total_ht = validFields.map(field => parseInt(field.unit_price, 10) * parseInt(field.quantity, 10)).reduce((acc, val) => acc + val)
+          this.total_vat = (this.invoice_attr.total_ht / 100) * parseInt(this.vat, 10)
+          this.invoice_attr.total_ttc = this.invoice_attr.total_ht + this.total_vat
+        } else {
+        // ELSE SET TOTAL TO ZERO
+          this.invoice_attr.total_ttc = 0;
+        }
+      },
       save() {
         if (!this.invoice.id) {
           this.$http.post('/invoices', { invoice: this.invoice_attr })
@@ -145,6 +197,9 @@
       reject(response) {
         console.log(response)
       }
+    },
+    beforeMount() {
+      this.compute();
     }
   }
 </script>
@@ -155,32 +210,15 @@
     margin-bottom: 3em;
 
     #marked {
-      margin-bottom: 20px;
-    }
-
-    .columns {
-      position: relative;
-
-      .is-danger {
-        position: absolute;
-        top: 45%;
-        right: -40px;
-      }
-    }
-
-    .disabled-field {
-      position: relative;
-      margin-top: 30px;
-
-      button {
-        position: absolute;
-        top: 0;
-        right: -50px;
-      }
+      margin-bottom: 10px;
     }
 
     .field-btn {
       margin-top: 20px;
+    }
+
+    #total-field {
+      float: right;
     }
   }
 </style>
