@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2020_01_03_184950) do
   create_table "fields", force: :cascade do |t|
     t.string "reference"
     t.string "quantity"
+    t.integer "unit_price"
     t.bigint "invoice_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -27,6 +28,7 @@ ActiveRecord::Schema.define(version: 2020_01_03_184950) do
   create_table "invoices", force: :cascade do |t|
     t.string "reference"
     t.string "description"
+    t.integer "total"
     t.integer "number"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
