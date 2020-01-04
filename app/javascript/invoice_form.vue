@@ -50,25 +50,69 @@
     <button class="button is-primary field-btn" @click="addItem">Add Item</button>
 
     <hr>
+    <h2 class="title">Total</h2>
+
+    <div class="columns">
+      <div class="column is-offset-9 is-3">
+        <div class="field is-horizontal" id="total-field">
+          <div class="field-label is-normal">
+            <label class="label">HT</label>
+          </div>
+          <div class="field-body">
+            <fieldset disabled>
+              <div class="field">
+                <p class="control has-icons-right">
+                  <input class="input is-medium" v-model="invoice_attr.total_ht">
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-euro-sign"></i>
+                  </span>
+                </p>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="columns">
       <div class="column">
         <button class="button is-primary is-medium" @click="save">Save Invoice</button>
       </div>
       <div class="column">
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">VAT</label>
+          </div>
+          <div class="control has-icons-left">
+            <div class="select is-medium">
+              <select v-model="vat" @change="compute">
+                <option selected>0</option>
+                <option>10</option>
+                <option>20</option>
+              </select>
+            </div>
+            <div class="icon is-small is-left">
+              <i class="fas fa-globe"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-3">
         <div class="field is-horizontal" id="total-field">
           <div class="field-label is-normal">
-            <label class="label">Total<br>TTC</label>
+            <label class="label">TTC</label>
           </div>
           <div class="field-body">
-            <div class="field">
-              <p class="control has-icons-right">
-                <input class="input is-medium" v-model="invoice_attr.total">
-                <span class="icon is-small is-right">
-                  <i class="fas fa-euro-sign"></i>
-                </span>
-              </p>
-            </div>
+            <fieldset disabled>
+              <div class="field">
+                <p class="control has-icons-right">
+                  <input class="input is-medium" v-model="invoice_attr.total_ttc">
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-euro-sign"></i>
+                  </span>
+                </p>
+              </div>
+            </fieldset>
           </div>
         </div>
       </div>
@@ -87,11 +131,14 @@
     data() {
       return {
         marked: 0,
+        vat: 0,
+        total_vat: 0,
         invoice_attr: {
           reference: this.invoice.reference,
           description: this.invoice.description,
           number: this.invoice.number,
-          total: null,
+          total_ht: null,
+          total_ttc: null,
           fields_attributes: this.fields
         }
       }
@@ -121,12 +168,18 @@
         this.marked -= 1
       },
       compute() {
+        // SELECT ONLY VALID FIELDS
         const validFields = this.invoice_attr.fields_attributes
                                 .filter(field => field._destroy !== '1')
+
+        // IF VALID FIELDS COMPUTE HT TTC & VAT
         if (validFields.length > 0) {
-          this.invoice_attr.total = validFields.map(field => parseInt(field.unit_price, 10) * parseInt(field.quantity, 10)).reduce((acc, val) => acc + val)
+          this.invoice_attr.total_ht = validFields.map(field => parseInt(field.unit_price, 10) * parseInt(field.quantity, 10)).reduce((acc, val) => acc + val)
+          this.total_vat = (this.invoice_attr.total_ht / 100) * parseInt(this.vat, 10)
+          this.invoice_attr.total_ttc = this.invoice_attr.total_ht + this.total_vat
         } else {
-          this.invoice_attr.total = 0;
+        // ELSE SET TOTAL TO ZERO
+          this.invoice_attr.total_ttc = 0;
         }
       },
       save() {

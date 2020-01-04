@@ -43,26 +43,34 @@
     <div class="column is-2">
       <div class="field">
         <label class="label">Unit Price</label>
-        <div class="control">
+        <div class="control has-icons-right">
           <input class="input"
                  type="text"
                  placeholder="350"
                  v-model="field.unit_price"
                  @keyup="compute">
+          <span class="icon is-small is-right">
+            <i class="fas fa-euro-sign"></i>
+          </span>
         </div>
       </div>
     </div>
 
     <div class="column is-2">
-      <div class="field">
-        <label class="label">Item Total</label>
-        <div class="control">
-          <input class="input"
-                 type="text"
-                 placeholder="350"
-                 v-model="field.unit_price * field.quantity">
+      <fieldset disabled>
+        <div class="field">
+          <label class="label">Item Total</label>
+          <div class="control has-icons-right">
+            <input class="input"
+                   type="text"
+                   placeholder="350"
+                   v-model="field.unit_price * field.quantity">
+            <span class="icon is-small is-right">
+              <i class="fas fa-euro-sign"></i>
+            </span>
+          </div>
         </div>
-      </div>
+      </fieldset>
     </div>
 
     <button class="button is-danger" @click="removeItem(index)">X</button>
