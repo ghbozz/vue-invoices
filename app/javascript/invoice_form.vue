@@ -1,16 +1,32 @@
 <template>
   <div class="container form-wrapper">
     <h2 class="title">Invoice</h2>
-    <div class="field">
-      <label class="label">Invoice Reference</label>
-      <div class="control">
-        <input class="input"
-               type="text"
-               placeholder="Invoice Reference"
-               v-model="invoice_attr.reference">
+
+    <div class="columns">
+      <div class="column is-2">
+        <div class="field">
+          <label class="label">Invoice Number</label>
+          <div class="control">
+            <input class="input"
+                   type="text"
+                   placeholder="Invoice Number"
+                   v-model="invoice_attr.number">
+          </div>
+        </div>
       </div>
-      <p class="help">This is a help text</p>
+      <div class="column">
+        <div class="field">
+          <label class="label">Invoice Reference</label>
+          <div class="control">
+            <input class="input"
+                   type="text"
+                   placeholder="Invoice Reference"
+                   v-model="invoice_attr.reference">
+          </div>
+        </div>
+      </div>
     </div>
+
     <div class="field">
       <label class="label">Invoice Description</label>
       <div class="control">
@@ -88,6 +104,7 @@
         invoice_attr: {
           reference: this.invoice.reference,
           description: this.invoice.description,
+          number: this.invoice.number,
           fields_attributes: this.fields
         }
       }
