@@ -23,7 +23,7 @@
 
     <hr>
     <h2 class="title">Items</h2>
-    <p id="marked">{{ marked }} Marked to be destroyed</p>
+    <p id="marked" v-if="marked > 0">{{ marked }} Marked to be destroyed</p>
 
     <div v-for="(field, index) in invoice_attr.fields_attributes">
       <div v-if="field._destroy == '1'">
