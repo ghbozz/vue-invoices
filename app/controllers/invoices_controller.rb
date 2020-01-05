@@ -6,6 +6,7 @@ class InvoicesController < ApplicationController
 
   def new
     @invoice = Invoice.new
+    @entities = Entity.all
   end
 
   def create
@@ -29,7 +30,7 @@ class InvoicesController < ApplicationController
   def invoice_params
     params.require(:invoice)
           .permit(:id, :reference, :description, :number,
-          :total_ht, :total_ttc, :total_tva, :tva,
+          :total_ht, :total_ttc, :total_tva, :tva, :entity_id,
           fields_attributes: [:id, :reference, :quantity, :unit_price, :_destroy])
   end
 

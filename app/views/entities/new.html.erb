@@ -1,0 +1,23 @@
+<div class="container centerized">
+  <%= simple_form_for @entity, wrapper: :default, defaults: { wrapper: false } do |f| %>
+    <div class="columns">
+      <div class="column">
+        <h2 class="title">New Entity</h2>
+        <%= f.input :name, placeholder: 'Entity Name' %>
+        <%= f.input :address, placeholder: 'Address' %>
+        <%= f.input :phone, placeholder: 'Phone' %>
+        <%= f.input :siret, placeholder: 'Siret' %>
+      </div>
+
+      <div class="column">
+        <h2 class="title">Bank Informations</h2>
+        <%= f.input :bic, placeholder: 'bic' %>
+        <%= f.input :iban, placeholder: 'iban' %>
+      </div>
+    </div>
+
+
+    <%= f.input :footer, placeholder: 'Footer' %>
+    <%= f.submit 'Save Entity', class: 'button is-primary is-centered' %>
+  <% end %>
+</div>

@@ -2,6 +2,19 @@
   <div class="container form-wrapper">
     <h2 class="title">Invoice</h2>
 
+    <div class="field">
+      <div class="control">
+        <div class="select is-primary">
+          <select v-model="selected_entity" @change="entitySelect">
+            <option v-for="(entity, index) in entities"
+                    v-bind:value="entity">
+                    {{ entity.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <div class="columns">
       <div class="column is-2">
         <div class="field">
@@ -126,8 +139,10 @@
   export default {
     data() {
       return {
+        selected_entity: this.entity || this.entities[0],
         marked: 0,
         invoice_attr: {
+          entity_id: this.selected_entity,
           reference: this.invoice.reference,
           description: this.invoice.description,
           number: this.invoice.number,
@@ -139,11 +154,14 @@
         }
       }
     },
-    props: ['invoice', 'fields'],
+    props: ['invoice', 'fields', 'entities', 'entity'],
     components: {
       field
     },
     methods: {
+      entitySelect() {
+        this.invoice_attr.entity_id = this.selected_entity.id
+      },
       addItem() {
         this.invoice_attr.fields_attributes.push({
           reference: '',
@@ -185,11 +203,14 @@
         }
       },
       save() {
+        console.log('Save')
         if (this.validation()) {
           if (!this.invoice.id) {
+            console.log('Create')
             this.$http.post('/invoices', { invoice: this.invoice_attr })
               .then(this.succes, this.reject)
           } else {
+            console.log('Update')
             this.$http.put(`/invoices/${this.invoice.id}`, { invoice: this.invoice_attr })
               .then(this.succes, this.reject)
           }
@@ -208,8 +229,11 @@
                                  .filter(field => field.value !== '')
 
         if (emptyFields.length === 0) {
+          console.log('Validation Passed')
           return true
         } else {
+          console.log('Validation Failed')
+          console.log(emptyFields)
           emptyFields.forEach((field) => {
             field.classList.add('is-danger')
             field.classList.remove('is-success')
@@ -223,6 +247,7 @@
       }
     },
     beforeMount() {
+      this.entitySelect();
       this.compute();
     }
   }
