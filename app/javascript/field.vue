@@ -5,7 +5,7 @@
 
       <div class="field">
         <div class="control">
-          <input class="input required"
+          <input class="input"
                  type="text"
                  :placeholder="field.reference + ' / ' +
                  'This item will be destroy if you save the invoice, to undo click on the button -->'">

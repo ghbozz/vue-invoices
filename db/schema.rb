@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_03_184950) do
+ActiveRecord::Schema.define(version: 2020_01_05_092309) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "entities", force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.string "phone"
+    t.string "siret"
+    t.string "bic"
+    t.string "iban"
+    t.text "footer"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "fields", force: :cascade do |t|
     t.string "reference"
@@ -28,7 +40,6 @@ ActiveRecord::Schema.define(version: 2020_01_03_184950) do
   create_table "invoices", force: :cascade do |t|
     t.string "reference"
     t.string "description"
-    t.integer "total"
     t.integer "number"
     t.string "tva"
     t.integer "total_ht"
@@ -36,6 +47,8 @@ ActiveRecord::Schema.define(version: 2020_01_03_184950) do
     t.integer "total_tva"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "entity_id"
+    t.index ["entity_id"], name: "index_invoices_on_entity_id"
   end
 
   add_foreign_key "fields", "invoices"

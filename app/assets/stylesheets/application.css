@@ -13,3 +13,20 @@
  *= require_tree .
  *= require_self
  */
+
+/*UTILITY CLASSES*/
+
+.centerized {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullwidth {
+  width: 100% !important;
+}
+
+.simple_form {
+  width: 70% !important;
+}

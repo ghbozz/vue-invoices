@@ -1,1 +1,4 @@
-<invoice_form :invoice="<%= @invoice.to_json %>" :fields="<%= @invoice.fields.to_json %>" />
+<invoice_form :invoice="<%= @invoice.to_json %>"
+              :fields="<%= @invoice.fields.to_json %>"
+              :entities="<%= @entities.to_json %>"
+              :entity="<%= @entities.first.to_json %>" />

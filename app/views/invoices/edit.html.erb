@@ -1,2 +1,6 @@
-<invoice_form :invoice="<%= @invoice.to_json(except: [:created_at, :updated_at]) %>"
-              :fields="<%= @invoice.fields.to_json(except: [:invoice_id, :created_at, :updated_at]) %>" />
+<invoice_form
+  :invoice="<%= @invoice.to_json(except: [:created_at, :updated_at]) %>"
+  :fields="<%= @invoice.fields.to_json(except: [:invoice_id, :created_at, :updated_at]) %>"
+  :entities="<%= Entity.all.to_json %>"
+  :entity="<%= @invoice.entity.to_json %>"
+/>
