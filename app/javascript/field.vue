@@ -5,12 +5,17 @@
 
       <div class="field">
         <div class="control">
-          <input class="input" type="text" :placeholder="field.reference">
+          <input class="input required"
+                 type="text"
+                 :placeholder="field.reference + ' / ' +
+                 'This item will be destroy if you save the invoice, to undo click on the button -->'">
         </div>
       </div>
 
       </fieldset>
-      <button class="undo-btn button is-warning" @click="undo(index)">O</button>
+      <button class="undo-btn button is-warning" @click="undo(index)">
+        <i class="fas fa-undo-alt"></i>
+      </button>
     </div>
   </div>
 
@@ -19,7 +24,7 @@
       <div class="field">
         <label class="label">Field Reference</label>
         <div class="control">
-          <input class="input"
+          <input class="input required"
                  type="text"
                  placeholder="Text input"
                  v-model="field.reference">
@@ -31,7 +36,7 @@
       <div class="field">
         <label class="label">Quantity</label>
         <div class="control">
-          <input class="input"
+          <input class="input required"
                  type="text"
                  placeholder="Text input"
                  v-model="field.quantity"
@@ -42,11 +47,11 @@
 
     <div class="column is-2">
       <div class="field">
-        <label class="label">Unit Price</label>
+        <label class="label">Unit Price / HT</label>
         <div class="control has-icons-right">
-          <input class="input"
+          <input class="input required"
                  type="text"
-                 placeholder="350"
+                 placeholder="TJM / Unit price"
                  v-model="field.unit_price"
                  @keyup="compute">
           <span class="icon is-small is-right">
@@ -59,7 +64,7 @@
     <div class="column is-2">
       <fieldset disabled>
         <div class="field">
-          <label class="label">Item Total</label>
+          <label class="label">Item Total / HT</label>
           <div class="control has-icons-right">
             <input class="input"
                    type="text"
@@ -73,7 +78,7 @@
       </fieldset>
     </div>
 
-    <button class="button is-danger" @click="removeItem(index)">X</button>
+    <button class="button remove-btn" @click="removeItem(index)">X</button>
 
   </div>
 </template>
@@ -108,7 +113,10 @@
   .columns {
     position: relative;
 
-    .is-danger {
+    .remove-btn {
+      background-color: rgb(241, 69, 104);
+      border-color: transparent;
+      color: white;
       position: absolute;
       top: 45%;
       right: -40px;
@@ -119,10 +127,19 @@
     position: relative;
     margin: 20px 0px;
 
+    input::placeholder {
+      color: lighten(red, 30%);
+      margin: 0 auto;
+    }
+
     button {
       position: absolute;
       top: 0;
       right: -52px;
+    }
+
+    .undo-btn {
+      width: 44px;
     }
   }
 </style>

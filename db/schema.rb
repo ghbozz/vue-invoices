@@ -30,6 +30,10 @@ ActiveRecord::Schema.define(version: 2020_01_03_184950) do
     t.string "description"
     t.integer "total"
     t.integer "number"
+    t.string "tva"
+    t.integer "total_ht"
+    t.integer "total_ttc"
+    t.integer "total_tva"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
