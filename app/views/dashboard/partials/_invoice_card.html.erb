@@ -1,0 +1,12 @@
+<div class="card-product">
+  <div class="card-btns">
+    <%= link_to 'Show', invoice_path(invoice), class: 'button is-primary is-light is-small' %>
+    <%= link_to 'Edit', edit_invoice_path(invoice), class: 'button is-primary is-light is-small' %>
+  </div>
+  <img src="https://raw.githubusercontent.com/lewagon/fullstack-images/master/uikit/skateboard.jpg" />
+  <div class="card-product-infos">
+    <h2 class="is-size-4"><%= invoice.reference %></h2>
+    <h4 class="is-size-6 has-text-grey"><%= invoice.entity.name %></h4>
+    <p><%= invoice.description %></p>
+  </div>
+</div>

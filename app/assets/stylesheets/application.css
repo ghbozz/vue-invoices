@@ -16,6 +16,10 @@
 
 /*UTILITY CLASSES*/
 
+.container {
+  padding-top: 36px;
+}
+
 .centerized {
   height: 100vh;
   display: flex;
@@ -28,5 +32,10 @@
 }
 
 .simple_form {
-  width: 70% !important;
+  width: 50% !important;
+  margin: 0 auto;
 }
+
+/*#new_user {
+  width: 70%;
+}*/
