@@ -7,7 +7,7 @@
         <div class="field">
           <label class="label">Invoice Number</label>
           <div class="control">
-            <input class="input"
+            <input class="input required"
                    type="text"
                    placeholder="Invoice Number"
                    v-model="invoice_attr.number">
@@ -18,7 +18,7 @@
         <div class="field">
           <label class="label">Invoice Reference</label>
           <div class="control">
-            <input class="input"
+            <input class="input required"
                    type="text"
                    placeholder="Invoice Reference"
                    v-model="invoice_attr.reference">
@@ -30,7 +30,7 @@
     <div class="field">
       <label class="label">Invoice Description</label>
       <div class="control">
-        <textarea class="textarea"
+        <textarea class="textarea required"
                   placeholder="e.g. Hello world"
                   v-model="invoice_attr.description">
         </textarea>
@@ -56,7 +56,7 @@
       <div class="column is-offset-9 is-3">
         <div class="field is-horizontal" id="total-field">
           <div class="field-label is-normal">
-            <label class="label">HT</label>
+            <label class="label">Total HT</label>
           </div>
           <div class="field-body">
             <fieldset disabled>
@@ -81,14 +81,14 @@
       <div class="column">
         <div class="field is-horizontal">
           <div class="field-label is-normal">
-            <label class="label">VAT</label>
+            <label class="label">TVA</label>
           </div>
           <div class="control has-icons-left">
             <div class="select is-medium">
-              <select v-model="vat" @change="compute">
-                <option selected>0</option>
-                <option>10</option>
-                <option>20</option>
+              <select v-model="invoice_attr.tva" @change="compute">
+                <option selected>0%</option>
+                <option>10%</option>
+                <option>20%</option>
               </select>
             </div>
             <div class="icon is-small is-left">
@@ -100,7 +100,7 @@
       <div class="column is-3">
         <div class="field is-horizontal" id="total-field">
           <div class="field-label is-normal">
-            <label class="label">TTC</label>
+            <label class="label">Total TTC</label>
           </div>
           <div class="field-body">
             <fieldset disabled>
@@ -117,10 +117,6 @@
         </div>
       </div>
     </div>
-
-
-
-
   </div>
 </template>
 
@@ -131,14 +127,14 @@
     data() {
       return {
         marked: 0,
-        vat: 0,
-        total_vat: 0,
         invoice_attr: {
           reference: this.invoice.reference,
           description: this.invoice.description,
           number: this.invoice.number,
-          total_ht: null,
-          total_ttc: null,
+          total_ht: 0,
+          total_ttc: 0,
+          total_tva: 0,
+          tva: this.invoice.tva || '0%',
           fields_attributes: this.fields
         }
       }
@@ -169,26 +165,34 @@
       },
       compute() {
         // SELECT ONLY VALID FIELDS
-        const validFields = this.invoice_attr.fields_attributes
+        const fields = this.invoice_attr.fields_attributes
                                 .filter(field => field._destroy !== '1')
 
-        // IF VALID FIELDS COMPUTE HT TTC & VAT
-        if (validFields.length > 0) {
-          this.invoice_attr.total_ht = validFields.map(field => parseInt(field.unit_price, 10) * parseInt(field.quantity, 10)).reduce((acc, val) => acc + val)
-          this.total_vat = (this.invoice_attr.total_ht / 100) * parseInt(this.vat, 10)
-          this.invoice_attr.total_ttc = this.invoice_attr.total_ht + this.total_vat
+        // IF ANY VALID FIELDS COMPUTE HT TTC & VAT
+        if (fields.length > 0) {
+          this.invoice_attr.total_ht = fields.map(
+            field => parseInt(field.unit_price, 10) * parseInt(field.quantity, 10)
+            ).reduce((acc, val) => acc + val)
+
+          this.invoice_attr.total_tva = (
+                this.invoice_attr.total_ht / 100) *
+                parseInt(this.invoice_attr.tva.split('%')[0], 10)
+
+          this.invoice_attr.total_ttc = this.invoice_attr.total_ht + this.invoice_attr.total_tva
         } else {
         // ELSE SET TOTAL TO ZERO
           this.invoice_attr.total_ttc = 0;
         }
       },
       save() {
-        if (!this.invoice.id) {
-          this.$http.post('/invoices', { invoice: this.invoice_attr })
-            .then(this.succes, this.reject)
-        } else {
-          this.$http.put(`/invoices/${this.invoice.id}`, { invoice: this.invoice_attr })
-            .then(this.succes, this.reject)
+        if (this.validation()) {
+          if (!this.invoice.id) {
+            this.$http.post('/invoices', { invoice: this.invoice_attr })
+              .then(this.succes, this.reject)
+          } else {
+            this.$http.put(`/invoices/${this.invoice.id}`, { invoice: this.invoice_attr })
+              .then(this.succes, this.reject)
+          }
         }
       },
       succes(response) {
@@ -196,6 +200,26 @@
       },
       reject(response) {
         console.log(response)
+      },
+      validation() {
+        const emptyFields = Array.from(document.querySelectorAll('.required'))
+                                 .filter(field => field.value === '')
+        const validFields = Array.from(document.querySelectorAll('.required'))
+                                 .filter(field => field.value !== '')
+
+        if (emptyFields.length === 0) {
+          return true
+        } else {
+          emptyFields.forEach((field) => {
+            field.classList.add('is-danger')
+            field.classList.remove('is-success')
+          })
+          validFields.forEach((field) => {
+            field.classList.add('is-success')
+            field.classList.remove('is-danger')
+          })
+          return false
+        }
       }
     },
     beforeMount() {

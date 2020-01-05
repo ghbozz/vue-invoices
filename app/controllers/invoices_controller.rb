@@ -1,4 +1,6 @@
 class InvoicesController < ApplicationController
+  before_action :set_invoice, only: [:show, :edit, :update]
+
   def show
   end
 
@@ -7,23 +9,32 @@ class InvoicesController < ApplicationController
   end
 
   def create
-    Invoice.create(invoice_params)
+    @invoice = Invoice.new(invoice_params)
+    if @invoice.save
+      redirect_to invoice_path(@invoice)
+    else
+      render :new
+    end
   end
 
   def edit
-    @invoice = Invoice.find(params[:id])
   end
 
   def update
-    @invoice = Invoice.find(params[:id])
     @invoice.update(invoice_params)
   end
 
   private
 
   def invoice_params
-    params.require(:invoice).permit(:id, :reference, :description, :number, :total,
-                                    fields_attributes: [:id, :reference, :quantity, :unit_price, :_destroy])
+    params.require(:invoice)
+          .permit(:id, :reference, :description, :number,
+          :total_ht, :total_ttc, :total_tva, :tva,
+          fields_attributes: [:id, :reference, :quantity, :unit_price, :_destroy])
+  end
+
+  def set_invoice
+    @invoice = Invoice.find(params[:id])
   end
 
 end
