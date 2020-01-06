@@ -5,6 +5,7 @@ class EntitiesController < ApplicationController
 
   def create
     @entity = Entity.new(entity_params)
+    @entity.user = current_user
     if @entity.save
       redirect_to root_path
     else

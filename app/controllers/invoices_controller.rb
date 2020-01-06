@@ -10,8 +10,10 @@ class InvoicesController < ApplicationController
   end
 
   def create
-    @invoice = Invoice.new(invoice_params)
-    @invoice.save
+    @invoice = Invoice.create(invoice_params)
+    respond_to do |format|
+      format.json { render json: @invoice, location: @invoice }
+    end
   end
 
   def edit
@@ -19,6 +21,9 @@ class InvoicesController < ApplicationController
 
   def update
     @invoice.update(invoice_params)
+    respond_to do |format|
+      format.json { render json: @invoice, location: @invoice }
+    end
   end
 
   private

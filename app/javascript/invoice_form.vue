@@ -147,6 +147,8 @@
 
 <script>
   import field from './field.vue'
+  import { validationsMixin } from './mixins/validations.js'
+  import { computationMixin } from './mixins/computation.js'
 
   export default {
     data() {
@@ -158,18 +160,17 @@
           reference: this.invoice.reference,
           description: this.invoice.description,
           number: this.invoice.number,
-          total_ht: 0,
-          total_ttc: 0,
-          total_tva: 0,
+          total_ht: this.invoice.total_ht,
+          total_ttc: this.invoice.total_ttc,
+          total_tva: this.invoice.total_tva,
           tva: this.invoice.tva || '0%',
           fields_attributes: this.fields
         }
       }
     },
+    mixins: [ validationsMixin, computationMixin ],
     props: ['invoice', 'fields', 'entities', 'entity'],
-    components: {
-      field
-    },
+    components: { field },
     methods: {
       entitySelect() {
         this.invoice_attr.entity_id = this.selected_entity.id
@@ -193,27 +194,6 @@
         this.invoice_attr.fields_attributes[index]._destroy = '0'
         this.marked -= 1
       },
-      compute() {
-        // SELECT ONLY VALID FIELDS
-        const fields = this.invoice_attr.fields_attributes
-                                .filter(field => field._destroy !== '1')
-
-        // IF ANY VALID FIELDS COMPUTE HT TTC & VAT
-        if (fields.length > 0) {
-          this.invoice_attr.total_ht = fields.map(
-            field => parseInt(field.unit_price, 10) * parseInt(field.quantity, 10)
-            ).reduce((acc, val) => acc + val)
-
-          this.invoice_attr.total_tva = (
-                this.invoice_attr.total_ht / 100) *
-                parseInt(this.invoice_attr.tva.split('%')[0], 10)
-
-          this.invoice_attr.total_ttc = this.invoice_attr.total_ht + this.invoice_attr.total_tva
-        } else {
-        // ELSE SET TOTAL TO ZERO
-          this.invoice_attr.total_ttc = 0;
-        }
-      },
       save() {
         console.log('Save')
         if (this.validations()) {
@@ -229,66 +209,25 @@
         }
       },
       succes(response) {
-        if (response.status === 204) {
-          Turbolinks.visit(`http://localhost:3000${response.url}`)
-          return false
+        console.log(response)
+        if (response.status === 200) {
+          Turbolinks.visit(`http://localhost:3000/invoices/${response.body.id}`)
         }
-        Turbolinks.visit(response.body.match(/http.*\/\d+/)[0])
+        if (response.status === 204) {
+          Turbolinks.visit(`http://localhost:3000/invoices/${response.body.id}`)
+        }
+        // Turbolinks.visit(response.body.match(/http.*\/\d+/)[0])
       },
       reject(response) {
-        // console.error(response)
+        console.error(response)
       },
-      validations() {
-        const emptyFields = Array.from(document.querySelectorAll('.required'))
-                                 .filter(field => field.value === '')
-        const requiredCount = Array.from(document.querySelectorAll('.required')).length
-        const validCount = Array.from(document.querySelectorAll('.is-success')).length
 
-        console.log('requiredCount', requiredCount)
-        console.log('this.valid.count', validCount)
-
-        if (validCount === requiredCount) {
-          return true
-        } else {
-          emptyFields.forEach((field) => {
-            field.classList.add('is-danger')
-            field.classList.remove('is-success')
-          })
-          return false
-        }
-      },
-      validateField(item) {
-        // console.log(typeof(item))
-        const target = item.target ? item.target : item
-        // console.log(target)
-        const regex = new RegExp(target.dataset.regex)
-
-        if (target.value === '') {
-          target.classList.remove('is-success')
-          target.classList.remove('is-warning')
-          target.parentNode.querySelector('.help').innerHTML = ''
-          return false
-        }
-
-        if ((regex).test(target.value)) {
-          target.classList.remove('is-warning')
-          target.classList.remove('is-danger')
-          target.classList.add('is-success')
-          target.parentNode.querySelector('.help').innerHTML = ''
-        } else {
-          target.classList.remove('is-success')
-          target.classList.remove('is-danger')
-          target.classList.add('is-warning')
-          target.parentNode.querySelector('.help').innerHTML = target.dataset.help
-        }
-      }
     },
     beforeMount() {
       this.entitySelect();
       this.compute();
     },
     mounted() {
-      // console.log(Array.from(this.$el.querySelectorAll('.required')))
       Array.from(this.$el.querySelectorAll('.required')).forEach(this.validateField)
     }
   }
