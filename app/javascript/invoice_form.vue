@@ -23,7 +23,11 @@
             <input class="input required"
                    type="text"
                    placeholder="Invoice Number"
-                   v-model="invoice_attr.number">
+                   data-regex="^[0-9]*$"
+                   data-help="Should only contain numbers"
+                   v-model="invoice_attr.number"
+                   @keyup="validateField">
+            <span class="help"></span>
           </div>
         </div>
       </div>
@@ -33,8 +37,12 @@
           <div class="control">
             <input class="input required"
                    type="text"
+                   data-regex="^.{10,}$"
+                   data-help="Minimum 10 Characters"
                    placeholder="Invoice Reference"
-                   v-model="invoice_attr.reference">
+                   v-model="invoice_attr.reference"
+                   @keyup="validateField">
+            <span class="help"></span>
           </div>
         </div>
       </div>
@@ -45,8 +53,12 @@
       <div class="control">
         <textarea class="textarea required"
                   placeholder="e.g. Hello world"
-                  v-model="invoice_attr.description">
+                  data-regex="^.{15,}$"
+                  data-help="Minimum 15 Characters"
+                  v-model="invoice_attr.description"
+                  @keyup="validateField">
         </textarea>
+        <span class="help"></span>
       </div>
     </div>
 
@@ -204,7 +216,7 @@
       },
       save() {
         console.log('Save')
-        if (this.validation()) {
+        if (this.validations()) {
           if (!this.invoice.id) {
             console.log('Create')
             this.$http.post('/invoices', { invoice: this.invoice_attr })
@@ -220,29 +232,47 @@
         console.log(response)
       },
       reject(response) {
-        console.log(response)
+        console.error(response)
       },
-      validation() {
+      validations() {
         const emptyFields = Array.from(document.querySelectorAll('.required'))
                                  .filter(field => field.value === '')
-        const validFields = Array.from(document.querySelectorAll('.required'))
-                                 .filter(field => field.value !== '')
+        const requiredCount = Array.from(document.querySelectorAll('.required')).length
+        const validCount = Array.from(document.querySelectorAll('.is-success')).length
 
-        if (emptyFields.length === 0) {
-          console.log('Validation Passed')
+        console.log('requiredCount', requiredCount)
+        console.log('this.valid.count', validCount)
+
+        if (validCount === requiredCount) {
           return true
         } else {
-          console.log('Validation Failed')
-          console.log(emptyFields)
           emptyFields.forEach((field) => {
             field.classList.add('is-danger')
             field.classList.remove('is-success')
           })
-          validFields.forEach((field) => {
-            field.classList.add('is-success')
-            field.classList.remove('is-danger')
-          })
           return false
+        }
+      },
+      validateField({target}) {
+        const regex = new RegExp(target.dataset.regex)
+
+        if (target.value === '') {
+          target.classList.remove('is-success')
+          target.classList.remove('is-warning')
+          target.parentNode.querySelector('.help').innerHTML = ''
+          return false
+        }
+
+        if ((regex).test(target.value)) {
+          target.classList.remove('is-warning')
+          target.classList.remove('is-danger')
+          target.classList.add('is-success')
+          target.parentNode.querySelector('.help').innerHTML = ''
+        } else {
+          target.classList.remove('is-success')
+          target.classList.remove('is-danger')
+          target.classList.add('is-warning')
+          target.parentNode.querySelector('.help').innerHTML = target.dataset.help
         }
       }
     },
