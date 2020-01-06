@@ -12,6 +12,7 @@ import VueResource from 'vue-resource'
 // COMPONENTS
 import App from '../app.vue'
 import invoice_form from '../invoice_form.vue'
+import sidebar from '../sidebar.vue'
 
 Vue.use(VueResource)
 Vue.use(TurbolinksAdapter)
@@ -23,7 +24,8 @@ document.addEventListener('turbolinks:load', () => {
   const app = new Vue({
     el: '[data-behavior="vue"]',
     components: {
-      invoice_form
+      invoice_form,
+      sidebar
     }
   })
 

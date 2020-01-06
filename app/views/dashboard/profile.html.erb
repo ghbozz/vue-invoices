@@ -1,0 +1,23 @@
+<div class="container">
+
+  <div class="user-entities">
+    <h2 class="title">My Entities</h2>
+    <div class="columns">
+      <% current_user.entities.each do |entity| %>
+        <%= render 'dashboard/partials/entity_card', entity: entity %>
+      <% end %>
+    </div>
+    <%= link_to 'Add Entity', new_entity_path, class: 'button is-primary is-medium' %>
+  </div>
+
+  <hr>
+
+  <div class="user-invoices">
+    <h2 class="title">My Invoices</h2>
+    <% current_user.invoices.each do |invoice| %>
+      <%= render 'dashboard/partials/invoice_card', invoice: invoice %>
+    <% end %>
+    <%= link_to 'Create Invoice', new_invoice_path, class: 'button is-primary is-medium' %>
+  </div>
+
+</div>
