@@ -114,7 +114,6 @@
         this.$parent.compute();
       },
       compute(event) {
-        console.log(event)
         this.$parent.compute();
         this.$parent.validateField(event)
       }

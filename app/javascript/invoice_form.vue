@@ -232,7 +232,7 @@
         Turbolinks.visit(response.body.match(/http.*\/\d+/)[0])
       },
       reject(response) {
-        console.error(response)
+        // console.error(response)
       },
       validations() {
         const emptyFields = Array.from(document.querySelectorAll('.required'))
@@ -254,7 +254,9 @@
         }
       },
       validateField(item) {
-        const target = typeof(item) === Object ? item.target : item
+        // console.log(typeof(item))
+        const target = item.target ? item.target : item
+        // console.log(target)
         const regex = new RegExp(target.dataset.regex)
 
         if (target.value === '') {
