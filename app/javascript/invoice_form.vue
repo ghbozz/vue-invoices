@@ -229,6 +229,10 @@
         }
       },
       succes(response) {
+        if (response.status === 204) {
+          Turbolinks.visit(`http://localhost:3000${response.url}`)
+          return false
+        }
         Turbolinks.visit(response.body.match(/http.*\/\d+/)[0])
       },
       reject(response) {
