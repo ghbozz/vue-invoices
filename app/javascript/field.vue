@@ -24,10 +24,14 @@
       <div class="field">
         <label class="label">Field Reference</label>
         <div class="control">
-          <input class="input"
+          <input class="input required"
                  type="text"
+                 data-regex="^.{5,}$"
+                 data-help="Minimum 5 Characters"
                  placeholder="Text input"
-                 v-model="field.reference">
+                 v-model="field.reference"
+                 @keyup="compute">
+          <span class="help"></span>
         </div>
       </div>
     </div>
@@ -36,11 +40,14 @@
       <div class="field">
         <label class="label">Quantity</label>
         <div class="control">
-          <input class="input"
+          <input class="input required is-success"
                  type="text"
+                 data-regex="^[0-9]*$"
+                 data-help="Should only contain numbers"
                  placeholder="Text input"
                  v-model="field.quantity"
                  @keyup="compute">
+          <span class="help"></span>
         </div>
       </div>
     </div>
@@ -49,11 +56,15 @@
       <div class="field">
         <label class="label">Unit Price / HT</label>
         <div class="control has-icons-right">
-          <input class="input"
+          <input class="input required"
                  type="text"
                  placeholder="TJM / Unit price"
+                 data-regex="^[0-9]*$"
+                 data-help="Should only contain numbers"
                  v-model="field.unit_price"
                  @keyup="compute">
+
+          <span class="help"></span>
           <span class="icon is-small is-right">
             <i class="fas fa-euro-sign"></i>
           </span>
@@ -102,8 +113,10 @@
         this.$parent.undo(index);
         this.$parent.compute();
       },
-      compute() {
+      compute(event) {
+        console.log(event)
         this.$parent.compute();
+        this.$parent.validateField(event)
       }
     }
   }

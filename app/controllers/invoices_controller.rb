@@ -11,11 +11,7 @@ class InvoicesController < ApplicationController
 
   def create
     @invoice = Invoice.new(invoice_params)
-    if @invoice.save
-      redirect_to invoice_path(@invoice)
-    else
-      render :new
-    end
+    @invoice.save
   end
 
   def edit

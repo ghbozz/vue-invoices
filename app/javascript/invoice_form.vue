@@ -253,7 +253,8 @@
           return false
         }
       },
-      validateField({target}) {
+      validateField(item) {
+        const target = typeof(item) === Object ? item.target : item
         const regex = new RegExp(target.dataset.regex)
 
         if (target.value === '') {
@@ -279,6 +280,10 @@
     beforeMount() {
       this.entitySelect();
       this.compute();
+    },
+    mounted() {
+      // console.log(Array.from(this.$el.querySelectorAll('.required')))
+      Array.from(this.$el.querySelectorAll('.required')).forEach(this.validateField)
     }
   }
 </script>
