@@ -24,7 +24,7 @@
       <div class="field">
         <label class="label">Field Reference</label>
         <div class="control">
-          <input class="input required"
+          <input class="input"
                  type="text"
                  placeholder="Text input"
                  v-model="field.reference">
@@ -36,7 +36,7 @@
       <div class="field">
         <label class="label">Quantity</label>
         <div class="control">
-          <input class="input required"
+          <input class="input"
                  type="text"
                  placeholder="Text input"
                  v-model="field.quantity"
@@ -49,7 +49,7 @@
       <div class="field">
         <label class="label">Unit Price / HT</label>
         <div class="control has-icons-right">
-          <input class="input required"
+          <input class="input"
                  type="text"
                  placeholder="TJM / Unit price"
                  v-model="field.unit_price"

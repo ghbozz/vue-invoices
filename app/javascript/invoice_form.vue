@@ -229,7 +229,7 @@
         }
       },
       succes(response) {
-        console.log(response)
+        Turbolinks.visit(response.body.match(/http.*\/\d+/)[0])
       },
       reject(response) {
         console.error(response)
